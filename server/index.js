@@ -102,6 +102,18 @@ app.get('/books', authMiddleware, async (req, res) => {
   res.json(data);
 });
 
+// ----- Rota pública: lista todos os livros -----
+app.get('/books/all', async (req, res) => {
+    const { data, error } = await supabaseAdmin
+        .from('books')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
+});
+
+
 app.post('/books', authMiddleware, async (req, res) => {
   // converte strings numéricas automaticamente
   const body = {
