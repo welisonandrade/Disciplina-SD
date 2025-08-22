@@ -1,6 +1,6 @@
-# Sistema Distribuído de Cadastro de Livros
+# Biblioteca Saber Democrático (SD) - Sistema Distribuído de Cadastro de Livros
 
-Este projeto implementa um sistema distribuído de cadastro de livros com cliente e servidor separados, usando uma aplicação web simples. O sistema permite a realização de operações CRUD (criar, ler, atualizar e excluir) para gerenciar livros.
+Este projeto implementa um sistema distribuído de cadastro de livros com cliente e servidor separados, usando uma aplicação web simples. O sistema permite a realização de operações CRUD (criar, ler, atualizar e excluir) para gerenciar livros. O intuito foi simular um ambiente digital que democratizasse o acesso a livros.
 
 ## Tecnologias Utilizadas
 
