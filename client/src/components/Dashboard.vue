@@ -85,7 +85,7 @@ async function createBook() {
     };
     const { data } = await api.post('/books', payload);
     books.value.unshift(data.book);
-    Object.assign(form, { title: '', author: '', pages: 0, year: 0 });
+    Object.assign(form, { title: '', author: '', pages: '', year: '' }); // mantém placeholders
     notify(true, 'Livro cadastrado!');
   } catch (e) {
     notify(false, e?.response?.data?.error || 'Erro ao criar livro');
@@ -100,6 +100,11 @@ function startEdit(b) {
   Object.assign(form, { title: b.title, author: b.author, pages: b.pages, year: b.year });
 }
 
+function cancelEdit() {
+  editingId.value = null;
+  Object.assign(form, { title: '', author: '', pages: '', year: '' });
+}
+
 async function updateBook() {
   if (!editingId.value || busy.value) return;
   busy.value = true;
@@ -107,15 +112,15 @@ async function updateBook() {
     const payload = {};
     if (form.title) payload.title = form.title;
     if (form.author) payload.author = form.author;
-    if (form.pages) payload.pages = Number(form.pages);
-    if (form.year || form.year === 0) payload.year = Number(form.year);
+    if (form.pages !== '') payload.pages = Number(form.pages);
+    if (form.year !== '') payload.year = Number(form.year);
 
     const { data } = await api.put(`/books/${editingId.value}`, payload);
     const idx = books.value.findIndex(b => b.id === editingId.value);
     if (idx >= 0) books.value[idx] = data.book;
 
     editingId.value = null;
-    Object.assign(form, { title: '', author: '', pages: 0, year: 0 });
+    Object.assign(form, { title: '', author: '', pages: '', year: '' });
     notify(true, 'Livro atualizado!');
   } catch (e) {
     notify(false, e?.response?.data?.error || 'Erro ao atualizar livro');
@@ -129,8 +134,7 @@ async function removeBook(id) {
 
   // se estiver editando este mesmo livro, sai do modo de edição
   if (editingId.value === id) {
-    editingId.value = null;
-    Object.assign(form, { title: '', author: '', pages: 0, year: 0 });
+    cancelEdit();
   }
 
   busy.value = true;
@@ -162,7 +166,6 @@ onMounted(async () => {
 
 <template>
   <main class="container">
-    <!-- volta para o nome padrão na interface -->
     <img src="../assets/biblioteca_SD_logo.png" alt="Logo da Biblioteca" class="logo" />
     <h1>Biblioteca SD</h1>
     <h4 class="msg-inicio">(restrito à administradores)</h4>
@@ -186,7 +189,6 @@ onMounted(async () => {
       </div>
     </section>
 
-    <!-- Botão 'Página inicial' abaixo do card, centralizado e no mesmo tom -->
     <div v-if="!isLogged" class="home-btn-container">
       <router-link to="/">
         <button class="home-btn">Página inicial</button>
@@ -209,7 +211,10 @@ onMounted(async () => {
           <input v-model.number="form.year" type="number" placeholder="Ano" :disabled="busy" />
           <div class="actions">
             <button v-if="!editingId" @click="createBook" :disabled="busy">Salvar</button>
-            <button v-else @click="updateBook" :disabled="busy">Atualizar</button>
+            <template v-else>
+              <button @click="updateBook" :disabled="busy">Atualizar</button>
+              <button class="secondary" @click="cancelEdit" :disabled="busy">Cancelar edição</button>
+            </template>
           </div>
         </div>
 
@@ -238,7 +243,6 @@ onMounted(async () => {
 </template>
 
 <style>
-/* Paleta e tema claro forçado (consistência em qualquer SO/navegador) */
 :root {
   color-scheme: light;
   --bg: #fafafa;
@@ -297,7 +301,7 @@ input {
 }
 input::placeholder { color:#9ca3af; }
 
-/* botões padrão (Entrar / Criar conta / Editar / etc.) */
+/* botões padrão */
 .actions { margin-top: 12px; display: flex; justify-content: center; gap: 8px; padding-top: 1em;}
 
 button, .home-btn {
@@ -308,9 +312,23 @@ button, .home-btn {
   background: var(--btn-bg);
   color: var(--text);
   transition: background-color .15s ease, border-color .15s ease;
-  appearance: none; -webkit-appearance: none; /* evita botão preto em iOS/tema escuro */
+  appearance: none; -webkit-appearance: none;
 }
 button:hover, .home-btn:hover { background: var(--btn-hover); }
+
+/* botão secundário (Cancelar edição) */
+button.secondary {
+  border-radius: 8px;
+  border: 1px solid #213547;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f9f9f9; /* veio do @media light */
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button.secondary:hover { background: #f3f3f3; }
 
 button.danger {
   border-color: var(--danger-border);
@@ -333,22 +351,22 @@ button.danger:hover { background: var(--danger-hover); }
 .empty { color:#666; font-size: 14px; }
 .row-actions { display:flex; gap:8px; }
 
-/* Botão 'Página inicial' igual aos demais, abaixo do card */
+/* Botão 'Página inicial' */
 .home-btn-container { display:flex; justify-content:center; margin-top:16px; }
 .home-btn { font-weight: 600; }
 
-/* estados desabilitados (quando busy=true) */
+/* estados desabilitados */
 button:disabled { opacity: 0.6; cursor: not-allowed; }
 input:disabled { background: #f3f4f6; color: #6b7280; }
 
+/* Logo e subtítulo */
 .logo {
-  display: block;        /* garante que ocupe uma linha só */
-  margin: 0 auto 5px;   /* centraliza e cria espaço abaixo */
-  max-width: 110px;      /* limite de largura da logo */
-  height: auto;          /* mantém proporção */
+  display: block;
+  margin: 0 auto 5px;
+  max-width: 110px;
+  height: auto;
   padding-bottom: 0;
 }
-
 .msg-inicio {
   font-size: 0.9em;
   color: #666;
@@ -356,3 +374,4 @@ input:disabled { background: #f3f4f6; color: #6b7280; }
   margin-top: -10px;
 }
 </style>
+
