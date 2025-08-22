@@ -11,7 +11,7 @@ const form = reactive({ title: '', author: '', pages: 0, year: 0 });
 const editingId = ref(null);   // id do livro em edição
 const message = ref(null);
 const errorMsg = ref(null);
-const busy = ref(false);       // <-- flag global de "ocupado"
+const busy = ref(false);       // flag de "ocupado" geral
 
 const isLogged = computed(() => !!user.value);
 
@@ -21,7 +21,7 @@ function notify(ok, text) {
   setTimeout(() => { message.value = null; errorMsg.value = null; }, 3000);
 }
 
-// Util: salvar/recuperar user no storage (para persistir após reload)
+// storage do usuário logado
 const USER_KEY = 'user';
 function persistUser(u) {
   if (u) localStorage.setItem(USER_KEY, JSON.stringify(u));
@@ -127,7 +127,7 @@ async function updateBook() {
 async function removeBook(id) {
   if (!confirm('Remover este livro?')) return;
 
-  // Se estiver editando este livro, cancela edição e limpa o form
+  // se estiver editando este mesmo livro, sai do modo de edição
   if (editingId.value === id) {
     editingId.value = null;
     Object.assign(form, { title: '', author: '', pages: 0, year: 0 });
@@ -162,6 +162,7 @@ onMounted(async () => {
 
 <template>
   <main class="container">
+    <!-- volta para o nome padrão na interface -->
     <h1>Biblioteca SD</h1>
 
     <!-- Bloco de auth -->
@@ -235,59 +236,83 @@ onMounted(async () => {
 </template>
 
 <style>
-/* força tema claro e cores consistentes em qualquer sistema */
-:root { 
-  color-scheme: light; 
+/* Paleta e tema claro forçado (consistência em qualquer SO/navegador) */
+:root {
+  color-scheme: light;
+  --bg: #fafafa;
+  --card: #ffffff;
+  --text: #111111;
+  --muted: #444444;
+  --border: #dddddd;
+  --shadow: rgba(0,0,0,.04);
+
+  --btn-bg: #f7f7f7;
+  --btn-hover: #f0f0f0;
+
+  --tab-active-bg: #e9f5ff;
+  --tab-active-border: #cde8ff;
+
+  --danger-bg: #ffecec;
+  --danger-hover: #ffe1e1;
+  --danger-border: #ffd3d3;
+
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
-body { margin: 0; background: #fafafa; color: #222; }
+
+body { margin: 0; background: var(--bg); color: var(--text); }
 
 .container { max-width: 900px; margin: 32px auto; padding: 0 16px; }
 h1 { margin: 0 0 16px; }
 
 .card {
-  background: #fff; border: 1px solid #eee; border-radius: 12px;
-  padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  background: var(--card); border: 1px solid #eee; border-radius: 12px;
+  padding: 16px; box-shadow: 0 1px 2px var(--shadow);
 }
 
-/* abas login/registrar — tom claro com realce azul suave no ativo */
+/* abas login/registrar */
 .tabs {
   display: flex;
   justify-content: center;
   gap: 8px;
   margin-bottom: 12px;
 }
-.tabs button { 
-  padding: 6px 10px; border-radius: 8px; 
-  border: 1px solid #ddd; background: #f6f6f6; color:#111;
+.tabs button {
+  padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--btn-bg); color: var(--text);
+  appearance: none; -webkit-appearance: none;
 }
-.tabs .active { background: #e9f5ff; border-color: #cde8ff; }
+.tabs .active { background: var(--tab-active-bg); border-color: var(--tab-active-border); }
 
-/* campos sempre claros (evita temas escuros do SO) */
-label { display: block; margin-top: 8px; font-size: 14px; color: #444; }
-input { 
-  width: 100%; padding: 8px 10px; margin-top: 4px; 
-  border: 1px solid #ddd; border-radius: 8px; 
-  background:#fff; color:#111; 
+/* campos sempre claros */
+label { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); }
+input {
+  width: 100%; padding: 8px 10px; margin-top: 4px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: #fff; color: var(--text);
   appearance: none; -webkit-appearance: none;
 }
 input::placeholder { color:#9ca3af; }
 
-/* botões padrão (Entrar / Criar conta / etc.) */
-.actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+/* botões padrão (Entrar / Criar conta / Editar / etc.) */
+.actions { margin-top: 12px; display: flex; justify-content: center; gap: 8px; }
+
+button, .home-btn {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--btn-bg);
+  color: var(--text);
+  transition: background-color .15s ease, border-color .15s ease;
+  appearance: none; -webkit-appearance: none; /* evita botão preto em iOS/tema escuro */
 }
-button { 
-  cursor: pointer; border: 1px solid #ddd; border-radius: 8px; 
-  padding: 8px 12px; background: #f7f7f7; color:#111;
-  transition: background-color .15s ease;
+button:hover, .home-btn:hover { background: var(--btn-hover); }
+
+button.danger {
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
 }
-button:hover { background: #f0f0f0; }
-button.danger { border-color: #ffd3d3; background: #ffecec; }
-button.danger:hover { background: #ffe1e1; }
+button.danger:hover { background: var(--danger-hover); }
 
 .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -304,17 +329,11 @@ button.danger:hover { background: #ffe1e1; }
 .empty { color:#666; font-size: 14px; }
 .row-actions { display:flex; gap:8px; }
 
-/* Botão 'Página inicial' com o MESMO tom dos demais (abaixo do card) */
+/* Botão 'Página inicial' igual aos demais, abaixo do card */
 .home-btn-container { display:flex; justify-content:center; margin-top:16px; }
-.home-btn { font-weight: 600; } /* herda as mesmas cores de 'button' */
+.home-btn { font-weight: 600; }
 
 /* estados desabilitados (quando busy=true) */
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-input:disabled {
-  background: #f3f4f6;
-  color: #6b7280;
-}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+input:disabled { background: #f3f4f6; color: #6b7280; }
 </style>
