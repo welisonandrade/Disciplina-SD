@@ -163,7 +163,9 @@ onMounted(async () => {
 <template>
   <main class="container">
     <!-- volta para o nome padrão na interface -->
+    <img src="../assets/biblioteca_SD_logo.png" alt="Logo da Biblioteca" class="logo" />
     <h1>Biblioteca SD</h1>
+    <h4 class="msg-inicio">(restrito à administradores)</h4>
 
     <!-- Bloco de auth -->
     <section v-if="!isLogged" class="card">
@@ -172,10 +174,10 @@ onMounted(async () => {
         <button :class="{active: mode==='register'}" @click="mode='register'">Registrar</button>
       </div>
 
-      <label>E-mail</label>
+      <label style="font-weight: bold;">E-mail</label>
       <input v-model="auth.email" type="email" placeholder="email@exemplo.com" />
 
-      <label>Senha</label>
+      <label style="font-weight: bold;">Senha</label>
       <input v-model="auth.password" type="password" placeholder="mín. 6 caracteres" />
 
       <div class="actions">
@@ -275,6 +277,7 @@ h1 { margin: 0 0 16px; }
   justify-content: center;
   gap: 8px;
   margin-bottom: 12px;
+  padding-bottom: 1em;
 }
 .tabs button {
   padding: 6px 10px; border-radius: 8px;
@@ -284,17 +287,18 @@ h1 { margin: 0 0 16px; }
 .tabs .active { background: var(--tab-active-bg); border-color: var(--tab-active-border); }
 
 /* campos sempre claros */
-label { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); }
+label { display: block; margin-top: 8px; font-size: 14px; color: var(--muted);  text-align: left;}
 input {
   width: 100%; padding: 8px 10px; margin-top: 4px;
   border: 1px solid var(--border); border-radius: 8px;
   background: #fff; color: var(--text);
   appearance: none; -webkit-appearance: none;
+  box-sizing: border-box;
 }
 input::placeholder { color:#9ca3af; }
 
 /* botões padrão (Entrar / Criar conta / Editar / etc.) */
-.actions { margin-top: 12px; display: flex; justify-content: center; gap: 8px; }
+.actions { margin-top: 12px; display: flex; justify-content: center; gap: 8px; padding-top: 1em;}
 
 button, .home-btn {
   cursor: pointer;
@@ -336,4 +340,19 @@ button.danger:hover { background: var(--danger-hover); }
 /* estados desabilitados (quando busy=true) */
 button:disabled { opacity: 0.6; cursor: not-allowed; }
 input:disabled { background: #f3f4f6; color: #6b7280; }
+
+.logo {
+  display: block;        /* garante que ocupe uma linha só */
+  margin: 0 auto 5px;   /* centraliza e cria espaço abaixo */
+  max-width: 110px;      /* limite de largura da logo */
+  height: auto;          /* mantém proporção */
+  padding-bottom: 0;
+}
+
+.msg-inicio {
+  font-size: 0.9em;
+  color: #666;
+  text-align: center;
+  margin-top: -10px;
+}
 </style>

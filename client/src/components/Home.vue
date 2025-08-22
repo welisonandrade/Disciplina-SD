@@ -1,10 +1,11 @@
 <template>
-  <div class="home-container">
-    <h1>Bem-vindo à Biblioteca</h1>
-    <p>Veja os livros mais recentes cadastrados em nossa plataforma.</p>
+  <div style="margin-top: 0;" class="home-container">
+    <img src="../assets/biblioteca_SD_logo.png" alt="Logo da Biblioteca" class="logo" />
+    <h1>Biblioteca Saber Democrático</h1>
+    <p style="padding-bottom: 1em;">A leitura que transforma, agora acessível a todos.</p>
 
     <div v-if="books.length > 0" class="book-list">
-      <h3>Últimos livros cadastrados</h3>
+      <h3>Últimos livros cadastrados no acervo:</h3>
       <ul class="list">
         <li v-for="book in books" :key="book.id" class="list-item">
           <strong>{{ book.title }}</strong>
@@ -17,7 +18,7 @@
     </div>
 
     <div class="actions">
-      <p>Para adicionar ou gerenciar seus livros, acesse o painel:</p>
+      <p>Para gerenciar seus livros, acesse o painel de administrador:</p>
       <router-link to="/dashboard">
         <button>Acessar Painel (Login / Registro)</button>
       </router-link>
@@ -101,4 +102,14 @@ onMounted(async () => {
   margin-top: 30px;
   color: #777;
 }
+
+.logo {
+  display: block;        /* garante que ocupe uma linha só */
+  margin: 0 auto 5px;   /* centraliza e cria espaço abaixo */
+  max-width: 140px;      /* limite de largura da logo */
+  height: auto;          /* mantém proporção */
+  padding-bottom: 0;
+}
+
+
 </style>
