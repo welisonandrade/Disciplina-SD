@@ -219,14 +219,24 @@ h1 { margin: 0 0 16px; }
   padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
 }
 
-.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.tabs {
+  display: flex;
+  justify-content: center;  /* centraliza os botões dentro do card */
+  gap: 8px;
+  margin-bottom: 12px;
+}
 .tabs button { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; background: #f6f6f6; }
 .tabs .active { background: #e9f5ff; border-color: #cde8ff; }
 
 label { display: block; margin-top: 8px; font-size: 14px; color: #444; }
 input { width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid #ddd; border-radius: 8px; }
 
-.actions { margin-top: 12px; display: flex; gap: 8px; }
+.actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center; /* centraliza os botões */
+  gap: 8px;
+}
 button { cursor: pointer; border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; background: #f7f7f7; }
 button:hover { background: #f0f0f0; }
 button.danger { border-color: #ffd3d3; background: #ffecec; }
