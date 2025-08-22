@@ -67,10 +67,10 @@ Este projeto implementa um sistema distribuído de cadastro de livros com client
 ## Screenshots
 
 ### 1 - Tela inicial
-![alt text](image-1.png)
+![alt text](/Screeshots/image-1.png)
 
 ### 2 - Painel de acesso ADMIN
-![alt text](image-2.png)
+![alt text](/Screeshots/image-2.png)
 
 ### 3 - Dashboard do ADMIN
-![alt text](image-3.png)
+![alt text](/Screeshots/image-3.png)
