@@ -163,6 +163,13 @@ onMounted(async () => {
       </div>
     </section>
 
+    <!-- Botão 'Página inicial' abaixo do card, centralizado e com mesmo estilo -->
+    <div v-if="!isLogged" class="home-btn-container">
+      <router-link to="/">
+        <button class="home-btn">Página inicial</button>
+      </router-link>
+    </div>
+
     <!-- Bloco logado -->
     <section v-else>
       <div class="topbar">
@@ -237,6 +244,7 @@ input { width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid #ddd;
   justify-content: center; /* centraliza os botões */
   gap: 8px;
 }
+
 button { cursor: pointer; border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; background: #f7f7f7; }
 button:hover { background: #f0f0f0; }
 button.danger { border-color: #ffd3d3; background: #ffecec; }
@@ -256,4 +264,15 @@ button.danger:hover { background: #ffe1e1; }
 .err { color: #b3261e; }
 .empty { color:#666; font-size: 14px; }
 .row-actions { display:flex; gap:8px; }
+
+/* Botão 'Página inicial' abaixo do card (mesmo estilo dos outros) */
+.home-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+.home-btn {
+  /* não muda o visual: usa o estilo global de 'button' acima */
+  font-weight: 600;
+}
 </style>
