@@ -163,7 +163,7 @@ onMounted(async () => {
       </div>
     </section>
 
-    <!-- Botão 'Página inicial' abaixo do card, centralizado e com mesmo estilo -->
+    <!-- Botão 'Página inicial' abaixo do card, centralizado e no mesmo tom -->
     <div v-if="!isLogged" class="home-btn-container">
       <router-link to="/">
         <button class="home-btn">Página inicial</button>
@@ -215,7 +215,11 @@ onMounted(async () => {
 </template>
 
 <style>
-:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+/* força tema claro e cores consistentes em qualquer sistema */
+:root { 
+  color-scheme: light; 
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
 body { margin: 0; background: #fafafa; color: #222; }
 
 .container { max-width: 900px; margin: 32px auto; padding: 0 16px; }
@@ -226,26 +230,41 @@ h1 { margin: 0 0 16px; }
   padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
 }
 
+/* abas login/registrar — tom claro com realce azul suave no ativo */
 .tabs {
   display: flex;
-  justify-content: center;  /* centraliza os botões dentro do card */
+  justify-content: center;
   gap: 8px;
   margin-bottom: 12px;
 }
-.tabs button { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; background: #f6f6f6; }
+.tabs button { 
+  padding: 6px 10px; border-radius: 8px; 
+  border: 1px solid #ddd; background: #f6f6f6; color:#111;
+}
 .tabs .active { background: #e9f5ff; border-color: #cde8ff; }
 
+/* campos sempre claros (evita temas escuros do SO) */
 label { display: block; margin-top: 8px; font-size: 14px; color: #444; }
-input { width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid #ddd; border-radius: 8px; }
+input { 
+  width: 100%; padding: 8px 10px; margin-top: 4px; 
+  border: 1px solid #ddd; border-radius: 8px; 
+  background:#fff; color:#111; 
+  appearance: none; -webkit-appearance: none;
+}
+input::placeholder { color:#9ca3af; }
 
+/* botões padrão (Entrar / Criar conta / etc.) */
 .actions {
   margin-top: 12px;
   display: flex;
-  justify-content: center; /* centraliza os botões */
+  justify-content: center;
   gap: 8px;
 }
-
-button { cursor: pointer; border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; background: #f7f7f7; }
+button { 
+  cursor: pointer; border: 1px solid #ddd; border-radius: 8px; 
+  padding: 8px 12px; background: #f7f7f7; color:#111;
+  transition: background-color .15s ease;
+}
 button:hover { background: #f0f0f0; }
 button.danger { border-color: #ffd3d3; background: #ffecec; }
 button.danger:hover { background: #ffe1e1; }
@@ -265,14 +284,7 @@ button.danger:hover { background: #ffe1e1; }
 .empty { color:#666; font-size: 14px; }
 .row-actions { display:flex; gap:8px; }
 
-/* Botão 'Página inicial' abaixo do card (mesmo estilo dos outros) */
-.home-btn-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-.home-btn {
-  /* não muda o visual: usa o estilo global de 'button' acima */
-  font-weight: 600;
-}
+/* Botão 'Página inicial' com o MESMO tom dos demais (abaixo do card) */
+.home-btn-container { display:flex; justify-content:center; margin-top:16px; }
+.home-btn { font-weight: 600; } /* herda as mesmas cores de 'button' */
 </style>
