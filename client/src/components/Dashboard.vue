@@ -11,6 +11,7 @@ const form = reactive({ title: '', author: '', pages: 0, year: 0 });
 const editingId = ref(null);   // id do livro em edição
 const message = ref(null);
 const errorMsg = ref(null);
+const busy = ref(false);       // <-- flag global de "ocupado"
 
 const isLogged = computed(() => !!user.value);
 
@@ -73,6 +74,8 @@ async function loadBooks() {
 }
 
 async function createBook() {
+  if (busy.value) return;
+  busy.value = true;
   try {
     const payload = {
       title: form.title,
@@ -86,15 +89,20 @@ async function createBook() {
     notify(true, 'Livro cadastrado!');
   } catch (e) {
     notify(false, e?.response?.data?.error || 'Erro ao criar livro');
+  } finally {
+    busy.value = false;
   }
 }
 
 function startEdit(b) {
+  if (busy.value) return;
   editingId.value = b.id;
   Object.assign(form, { title: b.title, author: b.author, pages: b.pages, year: b.year });
 }
 
 async function updateBook() {
+  if (!editingId.value || busy.value) return;
+  busy.value = true;
   try {
     const payload = {};
     if (form.title) payload.title = form.title;
@@ -111,17 +119,29 @@ async function updateBook() {
     notify(true, 'Livro atualizado!');
   } catch (e) {
     notify(false, e?.response?.data?.error || 'Erro ao atualizar livro');
+  } finally {
+    busy.value = false;
   }
 }
 
 async function removeBook(id) {
   if (!confirm('Remover este livro?')) return;
+
+  // Se estiver editando este livro, cancela edição e limpa o form
+  if (editingId.value === id) {
+    editingId.value = null;
+    Object.assign(form, { title: '', author: '', pages: 0, year: 0 });
+  }
+
+  busy.value = true;
   try {
     await api.delete(`/books/${id}`);
     books.value = books.value.filter(b => b.id !== id);
     notify(true, 'Livro removido!');
   } catch (e) {
     notify(false, e?.response?.data?.error || 'Erro ao remover livro');
+  } finally {
+    busy.value = false;
   }
 }
 
@@ -180,13 +200,13 @@ onMounted(async () => {
       <div class="grid">
         <div class="card">
           <h3>{{ editingId ? 'Editar Livro' : 'Novo Livro' }}</h3>
-          <input v-model="form.title" placeholder="Título" />
-          <input v-model="form.author" placeholder="Autor" />
-          <input v-model.number="form.pages" type="number" min="1" placeholder="Páginas" />
-          <input v-model.number="form.year" type="number" placeholder="Ano" />
+          <input v-model="form.title" placeholder="Título" :disabled="busy" />
+          <input v-model="form.author" placeholder="Autor" :disabled="busy" />
+          <input v-model.number="form.pages" type="number" min="1" placeholder="Páginas" :disabled="busy" />
+          <input v-model.number="form.year" type="number" placeholder="Ano" :disabled="busy" />
           <div class="actions">
-            <button v-if="!editingId" @click="createBook">Salvar</button>
-            <button v-else @click="updateBook">Atualizar</button>
+            <button v-if="!editingId" @click="createBook" :disabled="busy">Salvar</button>
+            <button v-else @click="updateBook" :disabled="busy">Atualizar</button>
           </div>
         </div>
 
@@ -200,8 +220,8 @@ onMounted(async () => {
                 <div class="meta">{{ b.author }} • {{ b.pages }} págs • {{ b.year }}</div>
               </div>
               <div class="row-actions">
-                <button @click="startEdit(b)">Editar</button>
-                <button class="danger" @click="removeBook(b.id)">Excluir</button>
+                <button @click="startEdit(b)" :disabled="busy">Editar</button>
+                <button class="danger" @click="removeBook(b.id)" :disabled="busy">Excluir</button>
               </div>
             </li>
           </ul>
@@ -287,4 +307,14 @@ button.danger:hover { background: #ffe1e1; }
 /* Botão 'Página inicial' com o MESMO tom dos demais (abaixo do card) */
 .home-btn-container { display:flex; justify-content:center; margin-top:16px; }
 .home-btn { font-weight: 600; } /* herda as mesmas cores de 'button' */
+
+/* estados desabilitados (quando busy=true) */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+input:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
 </style>
