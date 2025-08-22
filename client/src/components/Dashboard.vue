@@ -7,7 +7,7 @@ const auth = reactive({ email: '', password: '' });
 
 const user = ref(null);        // { id, email }
 const books = ref([]);         // lista de livros
-const form = reactive({ title: '', author: '', pages: 0, year: 0 });
+const form = reactive({ title: '', author: '', pages: '', year: '' });
 const editingId = ref(null);   // id do livro em edição
 const message = ref(null);
 const errorMsg = ref(null);
